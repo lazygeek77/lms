@@ -188,42 +188,6 @@ class LibraryRepository:
             """
             return conn.execute(query, tuple(args)).fetchall()
 
-    def reconcile_overdues(self, fine_per_day_cents: int) -> int:
-        with self.db.conn() as conn:
-            overdue_rows = conn.execute(
-                """
-                SELECT *
-                FROM borrow_transactions
-                WHERE returned_at IS NULL AND due_at < now()
-                """
-            ).fetchall()
-            applied = 0
-            now = datetime.now(tz=timezone.utc)
-
-            for row in overdue_rows:
-                overdue_days = (now.date() - row["due_at"].date()).days
-                if overdue_days <= 0:
-                    continue
-                computed = overdue_days * fine_per_day_cents
-                delta = max(computed - int(row["fine_cents"]), 0)
-                if delta == 0:
-                    continue
-
-                conn.execute(
-                    "UPDATE borrow_transactions SET fine_cents=%s WHERE id=%s",
-                    (computed, row["id"]),
-                )
-                conn.execute(
-                    """
-                    INSERT INTO member_fines(member_id, borrow_transaction_id, amount_cents, reason)
-                    VALUES (%s, %s, %s, %s)
-                    """,
-                    (row["member_id"], row["id"], delta, "OVERDUE_RECONCILIATION"),
-                )
-                applied += 1
-
-            return applied
-
     def member_fine_summary(self, member_id: str) -> tuple[int, list[dict[str, Any]]]:
         with self.db.conn() as conn:
             events = conn.execute(

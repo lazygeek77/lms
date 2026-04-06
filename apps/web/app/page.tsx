@@ -19,7 +19,7 @@ export default async function HomePage() {
           </Link>
           <Link href="/borrow" style={{ textDecoration: "none", border: "1px solid #cbd5e1", borderRadius: 10, padding: 14 }}>
             <strong>Borrow</strong>
-            <p style={{ margin: "8px 0 0", color: "#334155" }}>Borrow/return books and reconcile overdues.</p>
+            <p style={{ margin: "8px 0 0", color: "#334155" }}>Borrow/return books.</p>
           </Link>
         </div>
       </section>

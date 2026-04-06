@@ -113,20 +113,3 @@ export async function returnBookAction(formData: FormData) {
   });
   revalidateDashboardRoutes();
 }
-
-export async function extendBorrowAction(formData: FormData) {
-  await safeAction(async () => {
-    await callRpc("ExtendBorrow", {
-      borrowTransactionId: String(formData.get("transactionId") ?? ""),
-      extendDays: Number(formData.get("extendDays") ?? 7),
-    });
-  });
-  revalidateDashboardRoutes();
-}
-
-export async function reconcileOverduesAction() {
-  await safeAction(async () => {
-    await callRpc("ReconcileOverdues", {});
-  });
-  revalidateDashboardRoutes();
-}

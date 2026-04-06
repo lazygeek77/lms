@@ -1,6 +1,6 @@
 export const dynamic = "force-dynamic";
 
-import { borrowBookAction, extendBorrowAction, reconcileOverduesAction, returnBookAction } from "../actions";
+import { borrowBookAction, returnBookAction } from "../actions";
 import { Card, DashboardShell } from "../_components/dashboardShell";
 import { getBooks, getBorrowTransactions, getMembers } from "../../lib/dashboardData";
 import { centsToCurrency } from "../../lib/mappers";
@@ -53,12 +53,6 @@ export default async function BorrowPage() {
           </form>
         </Card>
 
-        <Card title="Overdue Reconciliation">
-          <p style={{ marginTop: 0 }}>Apply overdue fines for all currently overdue and unreturned loans.</p>
-          <form action={reconcileOverduesAction}>
-            <button type="submit">Reconcile Overdues</button>
-          </form>
-        </Card>
       </div>
 
       <Card title="Active Borrow Transactions">
@@ -86,12 +80,6 @@ export default async function BorrowPage() {
                     <form action={returnBookAction} style={{ margin: 0 }}>
                       <input type="hidden" name="transactionId" value={transaction.id} />
                       <button type="submit">Return</button>
-                    </form>
-                    <form action={extendBorrowAction} style={{ display: "flex", gap: 6, alignItems: "center", margin: 0 }}>
-                      <input type="hidden" name="transactionId" value={transaction.id} />
-                      <label htmlFor={`extend-days-${transaction.id}`}>Days</label>
-                      <input id={`extend-days-${transaction.id}`} name="extendDays" type="number" min={1} defaultValue={7} style={{ width: 72 }} />
-                      <button type="submit">Extend</button>
                     </form>
                   </td>
                 </tr>

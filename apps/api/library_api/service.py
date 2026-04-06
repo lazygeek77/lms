@@ -155,10 +155,6 @@ class LibraryService(library_pb2_grpc.LibraryServiceServicer):
         )
         return library_pb2.ListBorrowedBooksResponse(transactions=[self._tx_msg(r) for r in rows])
 
-    def ReconcileOverdues(self, request, context):
-        applied = self.repo.reconcile_overdues(self.fine_per_day_cents)
-        return library_pb2.ReconcileOverduesResponse(fines_applied=applied)
-
     def GetMemberFineSummary(self, request, context):
         total, events = self.repo.member_fine_summary(request.member_id)
         event_messages = [
