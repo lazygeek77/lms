@@ -57,15 +57,17 @@ npm run proto:gen
 ## Tests
 
 ### Backend unit tests
+Run the unit tests from inside the app/api docker container as created by docker compose.
 
 ```bash
 uv run --project apps/api pytest apps/api/tests/unit -q
 ```
 
 ### Backend integration tests
+Run the integration tests with a PostgreSQL database from inside the app/api docker container as created by docker compose.
 
 ```bash
-DATABASE_URL=postgresql://lms:lms@localhost:5432/lms uv run --project apps/api pytest apps/api/tests/integration -q -m integration
+DATABASE_URL=postgresql://lms:lms@db-dev:5432/lms uv run --project apps/api pytest apps/api/tests/integration -q -m integration
 ```
 
 ### Frontend tests
