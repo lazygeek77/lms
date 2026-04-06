@@ -18,11 +18,10 @@ All API calls are implemented via Next.js Server Actions.
 
 - `books` describes catalog entries.
 - `books.total_copies` and `books.copies_borrowed` model available inventory per title.
+- `members` describes library members.
 - `borrow_transactions` tracks active/history loans at book level.
-- `member_fines` tracks overdue-derived fines tied to members.
 
 ## Overdue/fine policy
 
 - Fine is computed from overdue days (`due_at` vs current time).
 - Daily fine amount is configurable via `FINE_PER_DAY_CENTS`.
-- Reconciliation endpoint applies incremental fine entries for overdue active loans.

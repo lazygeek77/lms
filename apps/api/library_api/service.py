@@ -154,23 +154,3 @@ class LibraryService(library_pb2_grpc.LibraryServiceServicer):
             overdue_only=request.overdue_only,
         )
         return library_pb2.ListBorrowedBooksResponse(transactions=[self._tx_msg(r) for r in rows])
-
-    def GetMemberFineSummary(self, request, context):
-        total, events = self.repo.member_fine_summary(request.member_id)
-        event_messages = [
-            library_pb2.FineEvent(
-                id=str(e["id"]),
-                member_id=str(e["member_id"]),
-                borrow_transaction_id=str(e["borrow_transaction_id"]) if e["borrow_transaction_id"] else "",
-                amount_cents=int(e["amount_cents"]),
-                reason=e["reason"],
-                created_at=self._timestamp(e["created_at"]),
-            )
-            for e in events
-        ]
-
-        return library_pb2.GetMemberFineSummaryResponse(
-            member_id=request.member_id,
-            outstanding_fine_cents=total,
-            fine_events=event_messages,
-        )

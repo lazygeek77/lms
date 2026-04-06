@@ -23,8 +23,3 @@ export type BorrowTransaction = {
   borrowedAt: string;
   fineCents: number;
 };
-
-export type FineSummary = {
-  memberId: string;
-  outstandingFineCents: number;
-};

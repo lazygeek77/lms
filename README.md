@@ -47,12 +47,7 @@ RUN_SEED_ON_START=1
 ```
 
 ## Protobuf generation
-
-Generate shared stubs:
-
-```bash
-npm run proto:gen
-```
+Protobuf generation happens during the backend (apps/api) image build process.
 
 ## Tests
 
