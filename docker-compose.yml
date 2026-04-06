@@ -1,0 +1,81 @@
+services:
+  db-dev:
+    image: postgres:16
+    profiles: ["dev"]
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-lms}
+      POSTGRES_USER: ${POSTGRES_USER:-lms}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-lms}
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_dev_data:/var/lib/postgresql/data
+
+  api-dev:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    profiles: ["dev"]
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-lms}:${POSTGRES_PASSWORD:-lms}@db-dev:5432/${POSTGRES_DB:-lms}
+      GRPC_BIND_ADDR: 0.0.0.0:50051
+      FINE_PER_DAY_CENTS: ${FINE_PER_DAY_CENTS:-50}
+      RUN_SEED_ON_START: 1
+    depends_on:
+      - db-dev
+    ports:
+      - "50051:50051"
+
+  web-dev:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    profiles: ["dev"]
+    working_dir: /app/apps/web
+    command: ["npm", "run", "start"]
+    environment:
+      WEB_GRPC_ENDPOINT: api-dev:50051
+    depends_on:
+      - api-dev
+    ports:
+      - "3000:3000"
+
+  db:
+    image: postgres:16
+    profiles: ["prod"]
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-lms}
+      POSTGRES_USER: ${POSTGRES_USER:-lms}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-lms}
+    volumes:
+      - db_prod_data:/var/lib/postgresql/data
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    profiles: ["prod"]
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-lms}:${POSTGRES_PASSWORD:-lms}@db:5432/${POSTGRES_DB:-lms}
+      GRPC_BIND_ADDR: 0.0.0.0:50051
+      FINE_PER_DAY_CENTS: ${FINE_PER_DAY_CENTS:-50}
+    depends_on:
+      - db
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    profiles: ["prod"]
+    working_dir: /app/apps/web
+    command: ["npm", "run", "start"]
+    environment:
+      WEB_GRPC_ENDPOINT: api:50051
+    depends_on:
+      - api
+    ports:
+      - "3000:3000"
+
+volumes:
+  db_dev_data:
+  db_prod_data:

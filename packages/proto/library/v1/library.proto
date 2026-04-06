@@ -1,0 +1,155 @@
+syntax = "proto3";
+
+package library.v1;
+
+import "google/protobuf/timestamp.proto";
+
+message Book {
+  string id = 1;
+  string title = 2;
+  string author = 3;
+  string isbn = 4;
+  int32 total_copies = 5;
+  int32 copies_borrowed = 6;
+  google.protobuf.Timestamp created_at = 7;
+}
+
+message Member {
+  string id = 1;
+  string full_name = 2;
+  string email = 3;
+  string phone = 4;
+  int64 outstanding_fine_cents = 5;
+  google.protobuf.Timestamp created_at = 6;
+}
+
+message BorrowTransaction {
+  string id = 1;
+  string member_id = 2;
+  string book_id = 3;
+  google.protobuf.Timestamp borrowed_at = 4;
+  google.protobuf.Timestamp due_at = 5;
+  google.protobuf.Timestamp returned_at = 6;
+  int64 fine_cents = 7;
+}
+
+message FineEvent {
+  string id = 1;
+  string member_id = 2;
+  string borrow_transaction_id = 3;
+  int64 amount_cents = 4;
+  string reason = 5;
+  google.protobuf.Timestamp created_at = 6;
+}
+
+message HealthRequest {}
+message HealthResponse {
+  string status = 1;
+}
+
+message CreateBookRequest {
+  string title = 1;
+  string author = 2;
+  string isbn = 3;
+  int32 total_copies = 4;
+}
+message CreateBookResponse {
+  Book book = 1;
+}
+
+message UpdateBookRequest {
+  string id = 1;
+  string title = 2;
+  string author = 3;
+  string isbn = 4;
+  int32 total_copies = 5;
+}
+message UpdateBookResponse {
+  Book book = 1;
+}
+
+message DeleteBookRequest {
+  string id = 1;
+}
+message DeleteBookResponse {
+  bool deleted = 1;
+}
+
+message ListBooksRequest {}
+message ListBooksResponse {
+  repeated Book books = 1;
+}
+
+message RegisterMemberRequest {
+  string full_name = 1;
+  string email = 2;
+  string phone = 3;
+}
+message RegisterMemberResponse {
+  Member member = 1;
+}
+
+message UpdateMemberRequest {
+  string id = 1;
+  string full_name = 2;
+  string email = 3;
+  string phone = 4;
+}
+message UpdateMemberResponse {
+  Member member = 1;
+}
+
+message DeleteMemberRequest {
+  string id = 1;
+}
+message DeleteMemberResponse {
+  bool deleted = 1;
+}
+
+message ListMembersRequest {}
+message ListMembersResponse {
+  repeated Member members = 1;
+}
+
+message BorrowBookRequest {
+  string member_id = 1;
+  string book_id = 2;
+  int32 loan_days = 3;
+}
+message BorrowBookResponse {
+  BorrowTransaction transaction = 1;
+}
+
+message ReturnBookRequest {
+  string borrow_transaction_id = 1;
+}
+message ReturnBookResponse {
+  BorrowTransaction transaction = 1;
+}
+
+message ListBorrowedBooksRequest {
+  string member_id = 1;
+  bool overdue_only = 2;
+}
+
+message ListBorrowedBooksResponse {
+  repeated BorrowTransaction transactions = 1;
+}
+
+service LibraryService {
+  rpc Health(HealthRequest) returns (HealthResponse);
+
+  rpc CreateBook(CreateBookRequest) returns (CreateBookResponse);
+  rpc UpdateBook(UpdateBookRequest) returns (UpdateBookResponse);
+  rpc DeleteBook(DeleteBookRequest) returns (DeleteBookResponse);
+  rpc ListBooks(ListBooksRequest) returns (ListBooksResponse);
+
+  rpc RegisterMember(RegisterMemberRequest) returns (RegisterMemberResponse);
+  rpc UpdateMember(UpdateMemberRequest) returns (UpdateMemberResponse);
+  rpc DeleteMember(DeleteMemberRequest) returns (DeleteMemberResponse);
+  rpc ListMembers(ListMembersRequest) returns (ListMembersResponse);
+
+  rpc BorrowBook(BorrowBookRequest) returns (BorrowBookResponse);
+  rpc ReturnBook(ReturnBookRequest) returns (ReturnBookResponse);
+  rpc ListBorrowedBooks(ListBorrowedBooksRequest) returns (ListBorrowedBooksResponse);
+}
